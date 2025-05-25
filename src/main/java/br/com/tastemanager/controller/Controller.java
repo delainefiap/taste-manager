@@ -51,6 +51,7 @@ public class Controller {
         var user = this.userService.deleteUser(id);
 
         return ResponseEntity.ok(user);
+
     }
 
 
