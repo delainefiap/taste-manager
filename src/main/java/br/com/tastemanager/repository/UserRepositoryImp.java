@@ -47,11 +47,12 @@ public class UserRepositoryImp implements UserRepository {
     }
 
     @Override
-    public Integer updatePassword(String password, Long id) {
+    public Integer updatePassword( Long id, String password) {
         return this.jdbcClient
-                .sql("UPDATE users SET password = :password WHERE id = :id")
+                .sql("UPDATE users SET password = :password, last_Update = :lastUpdate WHERE id = :id")
                 .param("password", password)
                 .param("id", id)
+                .param("lastUpdate", LocalDateTime.now())
                 .update();
     }
 
