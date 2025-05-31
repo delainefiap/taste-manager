@@ -7,15 +7,17 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    Integer createUser(User user);
+    Integer save(User user);
 
-    Integer updateUser(User user, Long id);
+    Integer updateUser(User user);
 
     Integer updatePassword( Long id, String password);
 
-    Integer deleteUser(Long id);
+    Integer deleteUser(String login);
 
     Optional<User> findById(Long id);
+
+    Optional<Long> findIdByLogin(String login);
 
     List<User> findAll(int size, int offset);
 

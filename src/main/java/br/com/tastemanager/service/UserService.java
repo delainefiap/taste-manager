@@ -5,6 +5,7 @@ import br.com.tastemanager.dto.request.UserRequestDTO;
 import br.com.tastemanager.entity.User;
 import br.com.tastemanager.mapper.UserMapper;
 import br.com.tastemanager.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,25 +19,30 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public String createUser(User userRequest) {
+    public String createUser(UserRequestDTO userRequest) {
 
-//        var user = userMapper.toEntity(userRequestDTO);
+        var user = userMapper.toEntity(userRequest);
 
-        userRepository.createUser(userRequest);
-
-        return "User created successfully";
+        try {
+            userRepository.save(user);
+            return "User created successfully";
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("O login informado já está em uso. Por favor, escolha outro.");
+        }
     }
 
-    public String updateUser(User userRequest, Long id) {
+    public String updateUser(UserRequestDTO userRequest) {
 
-        userRepository.updateUser(userRequest, id);
+        var user = userMapper.toEntity(userRequest);
+
+        userRepository.updateUser(user);
 
         return "User updated successfully";
     }
 
-    public String deleteUser(Long id) {
+    public String deleteUser(String login) {
 
-        userRepository.deleteUser(id);
+        userRepository.deleteUser(login);
 
         return "User deleted successfully";
     }
@@ -48,7 +54,11 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("Old password is incorrect");
         }
+    }
 
+    public boolean validateLogin(String login, String password) {
+        return userRepository.findAll(1, 0).stream()
+                .anyMatch(user -> user.getLogin().equals(login) && user.getPassword().equals(password));
     }
 
     private boolean passwordIsValidForUser(Long id, String oldPassword) {

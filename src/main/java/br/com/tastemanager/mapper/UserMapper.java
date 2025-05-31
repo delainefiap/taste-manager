@@ -9,11 +9,16 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-
-//    @Mapping(target = "id", ignore = true)
-//    @Mapping(target = "createdAt",  expression = "java(new java.util.Date())")
-//    @Mapping(target = "lastUpdate", ignore = true)
-//    User toEntity(UserRequestDTO dto);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "login", source = "login")
+    @Mapping(target = "password", source = "password")
+    @Mapping(target = "createdAt",  expression = "java(new java.util.Date())")
+    @Mapping(target = "lastUpdate", ignore = true)
+    @Mapping(target = "typePerson", source = "typePerson")
+    @Mapping(target = "address", source = "address")
+    User toEntity(UserRequestDTO dto);
 
 
 }
