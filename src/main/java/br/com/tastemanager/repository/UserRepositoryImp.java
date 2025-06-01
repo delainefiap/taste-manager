@@ -4,6 +4,7 @@ import br.com.tastemanager.entity.User;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -13,36 +14,40 @@ public class UserRepositoryImp implements UserRepository {
 
     private final JdbcClient jdbcClient;
 
-    public UserRepositoryImp(JdbcClient jdbcClient) {
+    private final Clock clock;
+
+    public UserRepositoryImp(JdbcClient jdbcClient, Clock clock) {
         this.jdbcClient = jdbcClient;
+        this.clock = clock;
     }
 
     @Override
     public Integer save(User user) {
         return this.jdbcClient
-                .sql("INSERT INTO users (name, email, login, password, create_at, type_person, address) VALUES (:name, :email, :login, :password, :createAt, :typePerson, :address)")
+                .sql("INSERT INTO users (name, email, login, password, created_at, type_person, address) VALUES (:name, :email, :login, :password, :createdAt, :typePerson, :address)")
                 .param("name", user.getName())
                 .param("email", user.getEmail())
                 .param("login", user.getLogin())
                 .param("password", user.getPassword())
-                .param("createAt", LocalDateTime.now())
+                .param("createdAt", LocalDateTime.now(clock))
                 .param("typePerson", user.getTypePerson())
                 .param("address", user.getAddress())
                 .update();
     }
 
     @Override
-    public Integer updateUser(User user) {
-        var id = findIdByLogin(user.getLogin())
-                .orElseThrow(() -> new IllegalArgumentException("Login não encontrado: " + user.getLogin()));
-
+    public Integer updateUser(Long id, User user) {
         return this.jdbcClient
-                .sql("UPDATE users SET name = :name, email = :email, login = :login, password = :password, last_Update = :lastUpdate, type_person = :typePerson, address = :address WHERE id = :id")
+                .sql("UPDATE users SET " +
+                        "name = COALESCE(:name, name), " +
+                        "email = COALESCE(:email, email), " +
+                        "last_update = :lastUpdate, " +
+                        "type_person = COALESCE(:typePerson, type_person), " +
+                        "address = COALESCE(:address, address) " +
+                        "WHERE id = :id")
                 .param("name", user.getName())
                 .param("email", user.getEmail())
-                .param("login", user.getLogin())
-                .param("password", user.getPassword())
-                .param("lastUpdate", LocalDateTime.now())
+                .param("lastUpdate", LocalDateTime.now(clock))
                 .param("typePerson", user.getTypePerson())
                 .param("address", user.getAddress())
                 .param("id", id)
@@ -50,11 +55,11 @@ public class UserRepositoryImp implements UserRepository {
     }
 
     @Override
-    public Integer updatePassword(Long id, String password) {
+    public Integer updatePassword(String login, String password) {
         return this.jdbcClient
-                .sql("UPDATE users SET password = :password, last_Update = :lastUpdate WHERE id = :id")
+                .sql("UPDATE users SET password = :password, last_update = :lastUpdate WHERE login = :login")
                 .param("password", password)
-                .param("id", id)
+                .param("login", login)
                 .param("lastUpdate", LocalDateTime.now())
                 .update();
     }
@@ -64,7 +69,7 @@ public class UserRepositoryImp implements UserRepository {
         var id = findIdByLogin(login)
                 .orElseThrow(() -> new IllegalArgumentException("Login não encontrado: " + login));
         return this.jdbcClient
-                .sql("DELETE FROM users WHERE login = :id")
+                .sql("DELETE FROM users WHERE id = :id")
                 .param("id", id)
                 .update();
     }
@@ -74,6 +79,15 @@ public class UserRepositoryImp implements UserRepository {
         return this.jdbcClient
                 .sql("SELECT * FROM users WHERE id = :id")
                 .param("id", id)
+                .query(User.class)
+                .optional();
+    }
+
+    @Override
+    public Optional<User> findUserByLogin(String login){
+        return this.jdbcClient
+                .sql("SELECT * FROM users WHERE login = :login")
+                .param("login", login)
                 .query(User.class)
                 .optional();
     }

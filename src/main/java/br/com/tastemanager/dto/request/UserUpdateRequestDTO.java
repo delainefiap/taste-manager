@@ -4,24 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class UserRequestDTO {
+public class UserUpdateRequestDTO {
 
     @JsonProperty("name")
-    @NotBlank(message = "You must provide a name.")
+    @NotBlank(message = "Name cannot be blank.")
     private String name;
 
     @JsonProperty("email")
-    @NotBlank(message = "E-mail is mandatory.")
-    @Email(message = "The email must be valid.")
+    @NotBlank(message = "The email must be valid and cannot be blank.")
+    @Email(message = "The email must be valid and cannot be blank.")
     private String email;
-
-    @JsonProperty("login")
-    @NotBlank(message = "Login is mandatory.")
-    private String login;
-
-    @JsonProperty("password")
-    @NotBlank(message = "Password is mandatory.")
-    private String password;
 
     @JsonProperty("typePerson")
     private String typePerson;
@@ -45,28 +37,9 @@ public class UserRequestDTO {
         this.email = email;
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getTypePerson() {
         return typePerson;
-    }
-
-    public void setTypePerson(String typePerson) {
-        this.typePerson = typePerson;
     }
 
     public String getAddress() {

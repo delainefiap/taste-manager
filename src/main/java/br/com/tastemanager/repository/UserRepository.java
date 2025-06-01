@@ -9,13 +9,15 @@ public interface UserRepository {
 
     Integer save(User user);
 
-    Integer updateUser(User user);
+    Integer updateUser(Long id, User user);
 
-    Integer updatePassword( Long id, String password);
+    Integer updatePassword( String login, String password);
 
     Integer deleteUser(String login);
 
     Optional<User> findById(Long id);
+
+    Optional<User> findUserByLogin(String login);
 
     Optional<Long> findIdByLogin(String login);
 

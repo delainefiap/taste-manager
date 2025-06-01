@@ -1,6 +1,7 @@
 package br.com.tastemanager.mapper;
 
 import br.com.tastemanager.dto.request.UserRequestDTO;
+import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
 import br.com.tastemanager.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,11 +15,19 @@ public interface UserMapper {
     @Mapping(target = "email", source = "email")
     @Mapping(target = "login", source = "login")
     @Mapping(target = "password", source = "password")
-    @Mapping(target = "createdAt",  expression = "java(new java.util.Date())")
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "lastUpdate", ignore = true)
     @Mapping(target = "typePerson", source = "typePerson")
     @Mapping(target = "address", source = "address")
-    User toEntity(UserRequestDTO dto);
+    User UserRequestDtoToEntity(UserRequestDTO dto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "lastUpdate", ignore = true)
+    @Mapping(target = "typePerson", source = "typePerson")
+    @Mapping(target = "address", source = "address")
+    User UserUpdateRequestDtoToEntity(UserUpdateRequestDTO dto);
 
 
 }

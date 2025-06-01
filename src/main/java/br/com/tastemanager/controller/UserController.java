@@ -2,7 +2,7 @@ package br.com.tastemanager.controller;
 
 import br.com.tastemanager.dto.request.ChangePasswordRequest;
 import br.com.tastemanager.dto.request.UserRequestDTO;
-import br.com.tastemanager.entity.User;
+import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
 import br.com.tastemanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
-//TODO melhorar o nome
 @RequestMapping("/user")
 public class UserController {
 
@@ -30,35 +31,34 @@ public class UserController {
 
     @Operation(summary = "Realiza a criação de um usuário.")
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<String> createUser(@Valid @RequestBody UserRequestDTO userRequest) {
         var response = this.userService.createUser(userRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Realiza a atualização de um usuário.")
-    @PatchMapping("/update")
-    public ResponseEntity<String> updateUser(@RequestBody UserRequestDTO userRequest) {
-        var response = this.userService.updateUser(userRequest);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id,
+                                             @RequestBody UserUpdateRequestDTO userRequest) {
+        var response = this.userService.updateUser(id,userRequest);
 
         return ResponseEntity.ok(response);
     }
 
-    //TODO revisar
     @Operation(summary = "Realiza a exclusão de um usuário.")
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestBody String login) {
+    public ResponseEntity<String> deleteUser(@RequestParam String login) {
         var response = this.userService.deleteUser(login);
-
         return ResponseEntity.ok(response);
 
     }
 
     @Operation(summary = "Troca a senha do usuário.")
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         this.userService.updatePassword(changePasswordRequest);
-        return ResponseEntity.ok("Senha alterada com sucesso.");
+        return ResponseEntity.ok("Password changed successfully.");
     }
 
     @Operation(summary = "Valida o login do usuário.")
@@ -69,5 +69,11 @@ public class UserController {
                 : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
+    @Operation(summary = "Pesquisa todos os usuários cadastrados.")
+    @GetMapping("/find-all")
+    public ResponseEntity<?> findAllUsers(@RequestParam int page, @RequestParam int size) {
+        var users = userService.findAllUsers(page, size);
+        return ResponseEntity.ok(users);
+    }
 
 }

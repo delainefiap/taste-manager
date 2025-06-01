@@ -1,19 +1,20 @@
 package br.com.tastemanager.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
 
 public class ChangePasswordRequest {
-    private Long id;
+    private String login;
     private String oldPassword;
-    private String password;
 
-    public Long getId() {
-        return id;
+    @NotBlank(message = "The new password cannot be empty or null.")
+    private String newPassword;
+
+    public String getLogin() {
+        return login;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getOldPassword() {
@@ -25,10 +26,10 @@ public class ChangePasswordRequest {
     }
 
     public String getPassword() {
-        return password;
+        return newPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String newPassword) {
+        this.newPassword = newPassword;
     }
 }
