@@ -14,17 +14,11 @@ public class PasswordService {
         this.userRepository = userRepository;
     }
 
-    public boolean isPasswordValid(String login, String password) {
-        return userRepository.findUserByLogin(login)
+    public boolean isPasswordValid(Long id, String password) {
+        return userRepository.findById(id)
                 .map(user -> user.getPassword().equals(password))
                 .orElse(false);
     }
-
-//    public void validatePasswordRequest(ChangePasswordRequest request) {
-//        if (!StringUtils.hasText(request.getPassword())) {
-//            throw new IllegalArgumentException("Password cannot be null, empty, or blank.");
-//        }
-//    }
 
     public void validateOldPassword(boolean isValid) {
         if (!isValid) {

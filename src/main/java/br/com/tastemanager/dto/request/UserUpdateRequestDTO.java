@@ -48,6 +48,10 @@ public class UserUpdateRequestDTO {
         return typePerson;
     }
 
+    public void setTypePerson(String typePerson) {
+        this.typePerson = typePerson;
+    }
+
     public String getAddress() {
         return address;
     }

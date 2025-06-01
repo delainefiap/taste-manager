@@ -1,8 +1,6 @@
 # TasteManager
 
-TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framework **Spring Boot**. O objetivo do projeto é
-gerenciar usuários e suas informações, incluindo funcionalidades como criação, atualização, exclusão e validação de
-login.
+TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framework **Spring Boot**. O objetivo do projeto é gerenciar usuários e suas informações, incluindo funcionalidades como criação, atualização, exclusão, troca de senha e validação de login.
 
 ## Tecnologias Utilizadas
 
@@ -11,16 +9,14 @@ login.
 - **Maven**
 - **MapStruct** (para mapeamento de DTOs)
 - **Docker** (opcional, para containerização)
-- **Banco de Dados SQL**
+- **Banco de Dados SQL** (PostgreSQL)
 
 ## Pré-requisitos
 
-Antes de começar, certifique-se de ter as seguintes ferramentas instaladas:
-
 - **Java 21** ou superior
-- **Maven** (para gerenciamento de dependências)
-- **Docker** (opcional, para execução em container)
-- **PostgreSQL** ou outro banco de dados SQL configurado
+- **Maven**
+- **Docker** (opcional)
+- **PostgreSQL** configurado
 
 ## Configuração do Projeto
 
@@ -28,40 +24,98 @@ Antes de começar, certifique-se de ter as seguintes ferramentas instaladas:
    ```bash
    git clone https://github.com/delainefiap/taste-manager.git
    ```
-   
-2. **Construa a imagem Docker**:
-   ```bash
-   docker build -t tastemanager-app . 
 
-3. **Suba a aplicação com o Docker Compose**:
+2. Construa a imagem Docker:
+   ```bash
+   docker build -t tastemanager-app .
+   ```
+
+3. Suba a aplicação com Docker Compose:
    ```bash
    docker-compose up --build
    ```
-3. **Acesse a aplicação**:
- ```bash
-   URL base: http://localhost:8080
- ```
-## **Endpoints da API**
 
-### **Usuários**
+4. Acesse a aplicação:
+    - **URL base**: `http://localhost:8080`
+   ```
 
-#### **Criar Usuário**
+5. Observação:
+    - A aplicação utiliza o banco H2
+    - Há anotações para criação da table e campos automaticamente
+    - Para otimizar, á um script que insere dados iniciais no banco
+    
+
+## Endpoints da API
+
+### 1. Criar Usuário
 - **POST** `/user/create`
-- **Body**:
-  ```json
-  {
-    "name": "John Doe",
-    "email": "johndoe@example.com",
-    "login": "johndoe",
-    "password": "123456",
-    "typePerson": "restaurant_owner",
-    "address": "123 Main Street"
-  }
-  ```
-- **Resposta**: 
-```String
-  HTTP 201 Created
-  {
-    "message": "User created successfully"
-  }
-  ```
+- **Descrição**: Cria um novo usuário.
+- **Regras**:
+    - `login` deve ser único.
+    - `name`, `email`, `login` e `password` são obrigatórios e válidos.
+- **Resposta**: `201 Created`
+
+### 2. Atualizar Usuário
+- **PUT** `/user/update/{id}`
+- **Descrição**: Atualiza dados permitidos de um usuário existente.
+- **Campos permitidos**: `name`, `email`, `typePerson`, `address`
+- **Regras**:
+    - `login` e `password` não podem ser alterados nesse endpoint.
+    - `name` e `email` devem ser válidos.
+- **Resposta**: `200 OK`
+
+### 3. Trocar Senha
+- **PUT** `/user/update-password/{id}`
+- **Descrição**: Altera a senha do usuário.
+- **Regras**:
+    - Senha atual deve estar correta.
+    - Nova senha não pode ser nula ou em branco.
+- **Resposta**: `200 OK`
+
+### 4. Deletar Usuário
+- **DELETE** `/user/delete/{id}`
+- **Descrição**: Remove um usuário.
+- **Regras**:
+    - Usuário deve existir.
+- **Resposta**: `200 OK`
+
+### 5. Validar Login
+- **POST** `/user/login`
+- **Descrição**: Verifica se login e senha são válidos.
+- **Regras**:
+    - `login` e `password` não podem estar vazios.
+- **Resposta**:
+    - `200 OK` se credenciais forem válidas.
+    - `401 Unauthorized` se inválidas.
+
+### 6. Listar Usuários
+- **GET** `/user/all`
+- **Descrição**: Lista usuários com suporte à paginação.
+- **Parâmetros**:
+    - `size` (opcional): número de usuários por página.
+    - `offset` (opcional): posição inicial.
+- **Resposta**: `200 OK` com lista paginada.
+
+## Regras Gerais de Validação
+
+- **name**: obrigatório, não pode ser nulo, vazio ou apenas espaços.
+- **email**: obrigatório e válido.
+- **typePerson**: deve ser `customer` ou `restaurant_owner`.
+- **address**: opcional, mas válido se fornecido.
+- **login**: definido na criação, não pode ser alterado.
+- **password**: só pode ser alterado pelo endpoint de troca de senha.
+
+## Testes
+
+Para executar os testes:
+```bash
+mvn test
+```
+
+## Contribuição
+
+Contribuição
+Contribuições são bem-vindas! Fique à vontade para abrir issues e pull requests
+
+Contato:
+Para mais informações, entre em contato com [Delaine] em [delaine@delaine].

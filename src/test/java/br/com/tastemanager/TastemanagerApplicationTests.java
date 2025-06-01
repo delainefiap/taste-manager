@@ -1,13 +1,16 @@
 package br.com.tastemanager;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
 
-@SpringBootTest
-class TastemanagerApplicationTests {
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+class TasteManagerApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void mainMethodRunsSuccessfully() {
+		assertDoesNotThrow(() ->
+				TasteManagerApplication.main(new String[] {})
+		);
 	}
-
 }

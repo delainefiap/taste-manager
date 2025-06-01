@@ -56,7 +56,7 @@ public class UserService {
     public void updatePassword(Long id, ChangePasswordRequest changePasswordRequest) {
         userValidation.validateUserExistsById(id);
 
-        if (passwordIsValidForUser(id, changePasswordRequest.getOldPassword())) {
+        if (passwordService.isPasswordValid(id, changePasswordRequest.getOldPassword())) {
 
             userRepository.updatePassword(id, changePasswordRequest.getNewPassword());
         } else {
@@ -71,10 +71,6 @@ public class UserService {
     public List<User> findAllUsers(int page, int size) {
         int offset = (page - 1) * size;
         return userRepository.findAll(size, offset);
-    }
-
-    private boolean passwordIsValidForUser(Long id, String password) {
-        return userRepository.findById(id).map(user -> user.getPassword().equals(password)).orElseThrow(() -> new IllegalArgumentException("Password incorrect"));
     }
 
 
