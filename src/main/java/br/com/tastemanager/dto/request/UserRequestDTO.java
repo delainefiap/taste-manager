@@ -1,5 +1,6 @@
 package br.com.tastemanager.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +30,11 @@ public class UserRequestDTO {
     @JsonProperty("address")
     private String address;
 
+    @JsonAnySetter
+    public void handleUnknownField(String key, Object value) {
+        throw new IllegalArgumentException("This field doesn't exist: " + key);
+    }
+
     public String getName() {
         return name;
     }
@@ -50,6 +56,9 @@ public class UserRequestDTO {
     }
 
     public void setLogin(String login) {
+        if (login != null && login.contains(" ")) {
+            throw new IllegalArgumentException("The 'login' cannot contain spaces.");
+        }
         this.login = login;
     }
 

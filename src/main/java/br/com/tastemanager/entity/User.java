@@ -26,7 +26,7 @@ public class User {
     private Long id;
     private String name;
     private String email;
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, updatable = false)
     private String login;
     private String password;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "America/Sao_Paulo")

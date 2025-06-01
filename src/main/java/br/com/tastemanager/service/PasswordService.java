@@ -20,11 +20,11 @@ public class PasswordService {
                 .orElse(false);
     }
 
-    public void validatePasswordRequest(ChangePasswordRequest request) {
-        if (!StringUtils.hasText(request.getPassword())) {
-            throw new IllegalArgumentException("Password cannot be null, empty, or blank.");
-        }
-    }
+//    public void validatePasswordRequest(ChangePasswordRequest request) {
+//        if (!StringUtils.hasText(request.getPassword())) {
+//            throw new IllegalArgumentException("Password cannot be null, empty, or blank.");
+//        }
+//    }
 
     public void validateOldPassword(boolean isValid) {
         if (!isValid) {

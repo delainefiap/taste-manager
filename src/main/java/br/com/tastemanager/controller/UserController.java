@@ -3,6 +3,7 @@ package br.com.tastemanager.controller;
 import br.com.tastemanager.dto.request.ChangePasswordRequest;
 import br.com.tastemanager.dto.request.UserRequestDTO;
 import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
+import br.com.tastemanager.dto.response.UserResponseDTO;
 import br.com.tastemanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class UserController {
 
     @Operation(summary = "Realiza a criação de um usuário.")
     @PostMapping("/create")
-    public ResponseEntity<String> createUser(@Valid @RequestBody UserRequestDTO userRequest) {
+    public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO userRequest) {
         var response = this.userService.createUser(userRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -41,23 +42,25 @@ public class UserController {
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id,
                                              @RequestBody UserUpdateRequestDTO userRequest) {
-        var response = this.userService.updateUser(id,userRequest);
+
+        var response = this.userService.updateUser(id, userRequest);
 
         return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Realiza a exclusão de um usuário.")
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(@RequestParam String login) {
-        var response = this.userService.deleteUser(login);
+    public ResponseEntity<String> deleteUser(@RequestParam Long id) {
+        var response = this.userService.deleteUser(id);
         return ResponseEntity.ok(response);
 
     }
 
     @Operation(summary = "Troca a senha do usuário.")
-    @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-        this.userService.updatePassword(changePasswordRequest);
+    @PostMapping("/change-password/{id}")
+    public ResponseEntity<String> changePassword(@PathVariable Long id,
+            @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        this.userService.updatePassword(id, changePasswordRequest);
         return ResponseEntity.ok("Password changed successfully.");
     }
 

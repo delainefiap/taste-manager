@@ -3,9 +3,11 @@ package br.com.tastemanager.service;
 import br.com.tastemanager.dto.request.ChangePasswordRequest;
 import br.com.tastemanager.dto.request.UserRequestDTO;
 import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
+import br.com.tastemanager.dto.response.UserResponseDTO;
 import br.com.tastemanager.entity.User;
 import br.com.tastemanager.mapper.UserMapper;
 import br.com.tastemanager.repository.UserRepository;
+import br.com.tastemanager.validator.UserValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,39 +18,47 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordService passwordService;
+    private final UserValidator userValidation;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordService passwordService) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordService passwordService, UserValidator userValidation) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordService = passwordService;
+        this.userValidation = userValidation;
     }
 
-    public String createUser(UserRequestDTO userRequest) {
-        var user = userMapper.UserRequestDtoToEntity(userRequest);
-
-        if (userRepository.findIdByLogin(user.getLogin()).isPresent()) {
-            throw new IllegalArgumentException("This login is unavailable. Please choose a different one.");
-        }
-
+    public UserResponseDTO createUser(UserRequestDTO userRequest) {
+        userValidation.validateLoginAvailability(userRequest.getLogin());
+        User user = userMapper.UserRequestDtoToEntity(userRequest);
         userRepository.save(user);
-        return "User created successfully";
+        return userMapper.userToUserResponseDto(user);
+
     }
 
     public String updateUser(Long id, UserUpdateRequestDTO userRequest) {
-        userRepository.updateUser(id, userMapper.UserUpdateRequestDtoToEntity( userRequest));
+        userValidation.validateUserExistsById(id);
+        if (userRequest.getName() != null && (userRequest.getName().isEmpty() || userRequest.getName().isBlank())){
+            throw new IllegalArgumentException("Name cannot be blank or empty.");
+        }
+        if (userRequest.getEmail() != null && (userRequest.getEmail().isEmpty() || userRequest.getEmail().isBlank() || !userRequest.getEmail().contains("@"))) {
+            throw new IllegalArgumentException("E-mail cannot be blank or empty.");
+        }
+        userRepository.updateUser(id, userMapper.userUpdateRequestDtoToEntity(userRequest));
         return "User updated successfully";
     }
 
-    public String deleteUser(String login) {
-        userRepository.deleteUser(login);
+    public String deleteUser(Long id) {
+        userValidation.validateUserExistsById(id);
+        userRepository.deleteUser(id);
         return "User deleted successfully";
     }
 
-    public void updatePassword(ChangePasswordRequest changePasswordRequest) {
+    public void updatePassword(Long id, ChangePasswordRequest changePasswordRequest) {
+        userValidation.validateUserExistsById(id);
 
-        if (passwordIsValidForUser(changePasswordRequest.getLogin(), changePasswordRequest.getOldPassword())) {
+        if (passwordIsValidForUser(id, changePasswordRequest.getOldPassword())) {
 
-            userRepository.updatePassword(changePasswordRequest.getLogin(), changePasswordRequest.getPassword());
+            userRepository.updatePassword(id, changePasswordRequest.getNewPassword());
         } else {
             throw new IllegalArgumentException("Old password is incorrect");
         }
@@ -63,8 +73,8 @@ public class UserService {
         return userRepository.findAll(size, offset);
     }
 
-    private boolean passwordIsValidForUser(String login, String password) {
-        return userRepository.findUserByLogin(login).map(user -> user.getPassword().equals(password)).orElseThrow(() -> new IllegalArgumentException("Password incorrect"));
+    private boolean passwordIsValidForUser(Long id, String password) {
+        return userRepository.findById(id).map(user -> user.getPassword().equals(password)).orElseThrow(() -> new IllegalArgumentException("Password incorrect"));
     }
 
 

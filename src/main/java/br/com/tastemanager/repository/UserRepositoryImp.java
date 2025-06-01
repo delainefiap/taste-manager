@@ -55,19 +55,17 @@ public class UserRepositoryImp implements UserRepository {
     }
 
     @Override
-    public Integer updatePassword(String login, String password) {
+    public Integer updatePassword(Long id, String password) {
         return this.jdbcClient
-                .sql("UPDATE users SET password = :password, last_update = :lastUpdate WHERE login = :login")
+                .sql("UPDATE users SET password = :password, last_update = :lastUpdate WHERE id = :id")
                 .param("password", password)
-                .param("login", login)
+                .param("id", id)
                 .param("lastUpdate", LocalDateTime.now())
                 .update();
     }
 
     @Override
-    public Integer deleteUser(String login) {
-        var id = findIdByLogin(login)
-                .orElseThrow(() -> new IllegalArgumentException("Login não encontrado: " + login));
+    public Integer deleteUser(Long id) {
         return this.jdbcClient
                 .sql("DELETE FROM users WHERE id = :id")
                 .param("id", id)

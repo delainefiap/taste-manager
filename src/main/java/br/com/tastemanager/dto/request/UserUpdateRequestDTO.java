@@ -1,5 +1,6 @@
 package br.com.tastemanager.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,6 +21,11 @@ public class UserUpdateRequestDTO {
 
     @JsonProperty("address")
     private String address;
+
+    @JsonAnySetter
+    public void handleUnknownField(String key, Object value) {
+        throw new IllegalArgumentException("It is not possible to change this field or it doesn't exist : " + key);
+    }
 
     public String getName() {
         return name;

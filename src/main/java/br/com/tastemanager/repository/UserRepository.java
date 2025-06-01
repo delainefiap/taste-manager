@@ -11,9 +11,9 @@ public interface UserRepository {
 
     Integer updateUser(Long id, User user);
 
-    Integer updatePassword( String login, String password);
+    Integer updatePassword(Long id, String password);
 
-    Integer deleteUser(String login);
+    Integer deleteUser(Long id);
 
     Optional<User> findById(Long id);
 
