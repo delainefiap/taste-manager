@@ -9,14 +9,14 @@ TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framewo
 - **Maven**
 - **MapStruct** (para mapeamento de DTOs)
 - **Docker** (opcional, para containerização)
-- **Banco de Dados SQL** (PostgreSQL)
+- **Banco de Dados SQL** (H2)
 
 ## Pré-requisitos
 
 - **Java 21** ou superior
 - **Maven**
 - **Docker** (opcional)
-- **PostgreSQL** configurado
+- **H2** configurado
 
 ## Configuração do Projeto
 
@@ -25,7 +25,12 @@ TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framewo
    git clone https://github.com/delainefiap/taste-manager.git
    ```
 
-2. Construa a imagem Docker:
+2. Gere o arquivo JAR do projeto:
+   ```shell
+   mvn clean package
+   ```
+   
+3. Construa a imagem Docker:
    ```bash
    docker build -t tastemanager-app .
    ```
@@ -106,11 +111,11 @@ TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framewo
 - **password**: só pode ser alterado pelo endpoint de troca de senha.
 
 ## Testes
-
 Para executar os testes:
 ```bash
 mvn test
 ```
+
 
 ## Contribuição
 
