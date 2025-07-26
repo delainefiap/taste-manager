@@ -1,5 +1,6 @@
 package br.com.tastemanager.dto.request;
 
+import br.com.tastemanager.entity.UserType;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
@@ -16,8 +17,8 @@ public class UserUpdateRequestDTO {
     @Email(message = "The email must be valid and cannot be blank.")
     private String email;
 
-    @JsonProperty("typePerson")
-    private String typePerson;
+    @JsonProperty("userTypeId")
+    private UserType userTypeId;
 
     @JsonProperty("address")
     private String address;
@@ -44,12 +45,12 @@ public class UserUpdateRequestDTO {
     }
 
 
-    public String getTypePerson() {
-        return typePerson;
+    public UserType getUserTypeId() {
+        return userTypeId;
     }
 
-    public void setTypePerson(String typePerson) {
-        this.typePerson = typePerson;
+    public void setUserTypeId(UserType userType) {
+        this.userTypeId = userTypeId;
     }
 
     public String getAddress() {

@@ -45,14 +45,14 @@ public class UserController {
 
         var response = this.userService.updateUser(id, userRequest);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(summary = "Realiza a exclusão de um usuário.")
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteUser(@RequestParam Long id) {
         var response = this.userService.deleteUser(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
@@ -61,7 +61,7 @@ public class UserController {
     public ResponseEntity<String> changePassword(@PathVariable Long id,
             @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         this.userService.updatePassword(id, changePasswordRequest);
-        return ResponseEntity.ok("Password changed successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
     }
 
     @Operation(summary = "Valida o login do usuário.")
@@ -76,7 +76,7 @@ public class UserController {
     @GetMapping("/find-all")
     public ResponseEntity<?> findAllUsers(@RequestParam int page, @RequestParam int size) {
         var users = userService.findAllUsers(page, size);
-        return ResponseEntity.ok(users);
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
 }

@@ -38,7 +38,7 @@ class UserRepositoryImpTest {
                 password VARCHAR(255),
                 created_at TIMESTAMP,
                 last_update TIMESTAMP,
-                type_person VARCHAR(50),
+                user_type_id VARCHAR(50),
                 address VARCHAR(255)
             )
         """).update();
@@ -51,7 +51,7 @@ class UserRepositoryImpTest {
         user.setEmail("john.doe@example.com");
         user.setLogin("johndoe");
         user.setPassword("password123");
-        user.setTypePerson("Individual");
+//        user.setUserType("Individual");
         user.setAddress("123 Main St");
 
         Integer rowsAffected = userRepository.save(user);
@@ -61,7 +61,7 @@ class UserRepositoryImpTest {
     @Test
     void shouldFindUserById() {
         jdbcClient.sql("""
-            INSERT INTO users (name, email, login, password, created_at, type_person, address)
+            INSERT INTO users (name, email, login, password, created_at, user_type_id, address)
             VALUES ('John Doe', 'john.doe@example.com', 'johndoe', 'password123', NOW(), 'Individual', '123 Main St')
         """).update();
 
@@ -73,14 +73,14 @@ class UserRepositoryImpTest {
     @Test
     void shouldUpdateUser() {
         jdbcClient.sql("""
-            INSERT INTO users (name, email, login, password, created_at, type_person, address)
+            INSERT INTO users (name, email, login, password, created_at, user_type_id, address)
             VALUES ('John Doe', 'john.doe@example.com', 'johndoe', 'password123', NOW(), 'Individual', '123 Main St')
         """).update();
 
         User updatedUser = new User();
         updatedUser.setName("Jane Doe");
         updatedUser.setEmail("jane.doe@example.com");
-        updatedUser.setTypePerson("Corporate");
+//        updatedUser.setUserType("Corporate");
         updatedUser.setAddress("456 Elm St");
 
         Integer rowsAffected = userRepository.updateUser(1L, updatedUser);
@@ -94,7 +94,7 @@ class UserRepositoryImpTest {
     @Test
     void shouldDeleteUser() {
         jdbcClient.sql("""
-            INSERT INTO users (name, email, login, password, created_at, type_person, address)
+            INSERT INTO users (name, email, login, password, created_at, user_type_id, address)
             VALUES ('John Doe', 'john.doe@example.com', 'johndoe', 'password123', NOW(), 'Individual', '123 Main St')
         """).update();
 
@@ -108,7 +108,7 @@ class UserRepositoryImpTest {
     @Test
     void shouldFindUserByLogin() {
         jdbcClient.sql("""
-            INSERT INTO users (name, email, login, password, created_at, type_person, address)
+            INSERT INTO users (name, email, login, password, created_at, user_type_id, address)
             VALUES ('John Doe', 'john.doe@example.com', 'johndoe', 'password123', NOW(), 'Individual', '123 Main St')
         """).update();
 
@@ -120,7 +120,7 @@ class UserRepositoryImpTest {
     @Test
     void shouldFindIdByLogin() {
         jdbcClient.sql("""
-            INSERT INTO users (name, email, login, password, created_at, type_person, address)
+            INSERT INTO users (name, email, login, password, created_at, user_type_id, address)
             VALUES ('John Doe', 'john.doe@example.com', 'johndoe', 'password123', NOW(), 'Individual', '123 Main St')
         """).update();
 
@@ -132,7 +132,7 @@ class UserRepositoryImpTest {
     @Test
     void shouldFindAllUsers() {
         jdbcClient.sql("""
-            INSERT INTO users (name, email, login, password, created_at, type_person, address)
+            INSERT INTO users (name, email, login, password, created_at, user_type_id, address)
             VALUES 
             ('John Doe', 'john.doe@example.com', 'johndoe', 'password123', NOW(), 'Individual', '123 Main St'),
             ('Jane Doe', 'jane.doe@example.com', 'janedoe', 'password456', NOW(), 'Corporate', '456 Elm St')

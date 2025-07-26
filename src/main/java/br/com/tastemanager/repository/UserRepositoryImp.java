@@ -24,13 +24,13 @@ public class UserRepositoryImp implements UserRepository {
     @Override
     public Integer save(User user) {
         return this.jdbcClient
-                .sql("INSERT INTO users (name, email, login, password, created_at, type_person, address) VALUES (:name, :email, :login, :password, :createdAt, :typePerson, :address)")
+                .sql("INSERT INTO users (name, email, login, password, created_at, user_type_id, address) VALUES (:name, :email, :login, :password, :createdAt, :userTypeId, :address)")
                 .param("name", user.getName())
                 .param("email", user.getEmail())
                 .param("login", user.getLogin())
                 .param("password", user.getPassword())
                 .param("createdAt", LocalDateTime.now(clock))
-                .param("typePerson", user.getTypePerson())
+                .param("userTypeId", user.getUserTypeId().getId())
                 .param("address", user.getAddress())
                 .update();
     }
@@ -42,13 +42,13 @@ public class UserRepositoryImp implements UserRepository {
                         "name = COALESCE(:name, name), " +
                         "email = COALESCE(:email, email), " +
                         "last_update = :lastUpdate, " +
-                        "type_person = COALESCE(:typePerson, type_person), " +
+                        "user_type_id = COALESCE(:userTypeId, user_type_id), " +
                         "address = COALESCE(:address, address) " +
                         "WHERE id = :id")
                 .param("name", user.getName())
                 .param("email", user.getEmail())
                 .param("lastUpdate", LocalDateTime.now(clock))
-                .param("typePerson", user.getTypePerson())
+                .param("userTypeId", user.getUserTypeId())
                 .param("address", user.getAddress())
                 .param("id", id)
                 .update();
@@ -108,6 +108,15 @@ public class UserRepositoryImp implements UserRepository {
                 .param("offset", offset)
                 .query(User.class)
                 .list();
+    }
+
+    @Override
+    public Long countByUserTypeId(Long userTypeId) {
+        return this.jdbcClient
+                .sql("SELECT COUNT(*) FROM users WHERE user_type_id = :userTypeId")
+                .param("userTypeId", userTypeId)
+                .query(Long.class)
+                .single();
     }
 
 

@@ -23,7 +23,7 @@ public interface UserRepository {
 
     List<User> findAll(int size, int offset);
 
-
+    Long countByUserTypeId(Long userTypeId);
 
 
 }
