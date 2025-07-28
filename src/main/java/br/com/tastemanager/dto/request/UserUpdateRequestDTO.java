@@ -49,7 +49,7 @@ public class UserUpdateRequestDTO {
         return userTypeId;
     }
 
-    public void setUserTypeId(UserType userType) {
+    public void setUserTypeId(UserType userTypeId) {
         this.userTypeId = userTypeId;
     }
 
@@ -60,4 +60,6 @@ public class UserUpdateRequestDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+
+
 }

@@ -1,25 +1,5 @@
 package br.com.tastemanager.service;
 
-import br.com.tastemanager.dto.request.ChangePasswordRequest;
-import br.com.tastemanager.dto.request.UserRequestDTO;
-import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
-import br.com.tastemanager.dto.response.UserResponseDTO;
-import br.com.tastemanager.entity.User;
-import br.com.tastemanager.helper.TestDataHelper;
-import br.com.tastemanager.mapper.UserMapper;
-import br.com.tastemanager.repository.UserRepository;
-import br.com.tastemanager.validator.UserValidator;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 class UserServiceTest {
 //
 //    @Mock

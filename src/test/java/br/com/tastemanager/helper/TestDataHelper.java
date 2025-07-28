@@ -1,12 +1,8 @@
 package br.com.tastemanager.helper;
 
-import br.com.tastemanager.dto.request.ChangePasswordRequest;
-import br.com.tastemanager.dto.request.UserRequestDTO;
-import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
-import br.com.tastemanager.entity.User;
+import br.com.tastemanager.dto.request.ChangePasswordRequestDTO;
 import br.com.tastemanager.mapper.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,8 +36,8 @@ public class TestDataHelper {
 //        return dto;
 //    }
 
-    public static ChangePasswordRequest buildChangePasswordRequest(String oldPass, String newPass) {
-        ChangePasswordRequest dto = new ChangePasswordRequest();
+    public static ChangePasswordRequestDTO buildChangePasswordRequest(String oldPass, String newPass) {
+        ChangePasswordRequestDTO dto = new ChangePasswordRequestDTO();
         dto.setOldPassword(oldPass);
         dto.setNewPassword(newPass);
         return dto;

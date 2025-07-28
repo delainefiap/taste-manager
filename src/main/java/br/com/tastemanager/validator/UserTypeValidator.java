@@ -22,6 +22,12 @@ public class UserTypeValidator {
         }
     }
 
+    public void validateUserTypeId(Long userTypeId) {
+        if (!userTypeRepository.findById(userTypeId).isPresent()) {
+            throw new IllegalArgumentException("UserType with this id do not exists. Please choose a different one.");
+        }
+    }
+
     public void validateUserTypeIsInUse(Long id) {
         Long count = userRepository.countByUserTypeId(id);
         if (count > 0) {

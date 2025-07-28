@@ -1,34 +1,21 @@
 package br.com.tastemanager.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "menu")
 public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id")
+    private Restaurant restaurant;
 
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
-    private Double price;
-
-    @Column(name = "available_only_at_restaurant", nullable = false)
-    private Boolean availableOnlyAtRestaurant;
-
-    @Column(nullable = false)
-    private String photoPath;
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MenuItem> items;
 
     public Long getId() {
         return id;
@@ -38,43 +25,19 @@ public class Menu {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
-    public String getDescription() {
-        return description;
+    public List<MenuItem> getItems() {
+        return items;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Boolean getAvailableOnlyAtRestaurant() {
-        return availableOnlyAtRestaurant;
-    }
-
-    public void setAvailableOnlyAtRestaurant(Boolean availableOnlyAtRestaurant) {
-        this.availableOnlyAtRestaurant = availableOnlyAtRestaurant;
-    }
-
-    public String getPhotoPath() {
-        return photoPath;
-    }
-
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
+    public void setItems(List<MenuItem> items) {
+        this.items = items;
     }
 }

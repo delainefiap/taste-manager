@@ -1,6 +1,6 @@
 package br.com.tastemanager.controller;
 
-import br.com.tastemanager.dto.request.ChangePasswordRequest;
+import br.com.tastemanager.dto.request.ChangePasswordRequestDTO;
 import br.com.tastemanager.dto.request.UserRequestDTO;
 import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
 import br.com.tastemanager.dto.response.UserResponseDTO;
@@ -42,7 +42,6 @@ public class UserController {
     @PatchMapping("/update/{id}")
     public ResponseEntity<String> updateUser(@PathVariable Long id,
                                              @RequestBody UserUpdateRequestDTO userRequest) {
-
         var response = this.userService.updateUser(id, userRequest);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -59,8 +58,8 @@ public class UserController {
     @Operation(summary = "Troca a senha do usuário.")
     @PostMapping("/change-password/{id}")
     public ResponseEntity<String> changePassword(@PathVariable Long id,
-            @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
-        this.userService.updatePassword(id, changePasswordRequest);
+            @Valid @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO) {
+        this.userService.updatePassword(id, changePasswordRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
     }
 

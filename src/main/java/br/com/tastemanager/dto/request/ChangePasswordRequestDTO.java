@@ -2,7 +2,7 @@ package br.com.tastemanager.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class ChangePasswordRequest {
+public class ChangePasswordRequestDTO {
     private String oldPassword;
 
     @NotBlank(message = "The new password cannot be empty or null.")

@@ -1,16 +1,23 @@
 package br.com.tastemanager.service;
 
-import br.com.tastemanager.dto.request.ChangePasswordRequest;
+import br.com.tastemanager.dto.request.ChangePasswordRequestDTO;
 import br.com.tastemanager.dto.request.UserRequestDTO;
 import br.com.tastemanager.dto.request.UserUpdateRequestDTO;
 import br.com.tastemanager.dto.response.UserResponseDTO;
 import br.com.tastemanager.entity.User;
 import br.com.tastemanager.mapper.UserMapper;
 import br.com.tastemanager.repository.UserRepository;
+import br.com.tastemanager.validator.UserTypeValidator;
 import br.com.tastemanager.validator.UserValidator;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -20,11 +27,14 @@ public class UserService {
     private final PasswordService passwordService;
     private final UserValidator userValidation;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordService passwordService, UserValidator userValidation) {
+    private final UserTypeValidator userTypeValidator;
+
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordService passwordService, UserValidator userValidation, UserTypeValidator userTypeValidatior, UserTypeValidator userTypeValidator) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordService = passwordService;
         this.userValidation = userValidation;
+        this.userTypeValidator = userTypeValidator;
     }
 
     public UserResponseDTO createUser(UserRequestDTO userRequest) {
@@ -37,40 +47,66 @@ public class UserService {
 
     public String updateUser(Long id, UserUpdateRequestDTO userRequest) {
         userValidation.validateUserExistsById(id);
-        if (userRequest.getName() != null && (userRequest.getName().isEmpty() || userRequest.getName().isBlank())){
+
+        if (userRequest.getName() != null && (userRequest.getName().isEmpty() || userRequest.getName().isBlank())) {
             throw new IllegalArgumentException("Name cannot be blank or empty.");
         }
         if (userRequest.getEmail() != null && (userRequest.getEmail().isEmpty() || userRequest.getEmail().isBlank() || !userRequest.getEmail().contains("@"))) {
             throw new IllegalArgumentException("E-mail cannot be blank or empty.");
         }
-        userRepository.updateUser(id, userMapper.userUpdateRequestDtoToEntity(userRequest));
+
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (userRequest.getName() != null) {
+            existingUser.setName(userRequest.getName());
+        }
+        if (userRequest.getEmail() != null) {
+            existingUser.setEmail(userRequest.getEmail());
+        }
+        if (userRequest.getAddress() != null) {
+            existingUser.setAddress(userRequest.getAddress());
+        }
+
+        if (userRequest.getUserTypeId() != null) {
+            userTypeValidator.validateUserTypeId(userRequest.getUserTypeId().getId());
+                existingUser.setUserTypeId(userRequest.getUserTypeId());
+            }
+
+        existingUser.setLastUpdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
+        );
+
+        userRepository.save(existingUser);
         return "User updated successfully";
     }
 
     public String deleteUser(Long id) {
         userValidation.validateUserExistsById(id);
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
         return "User deleted successfully";
     }
 
-    public void updatePassword(Long id, ChangePasswordRequest changePasswordRequest) {
+    public void updatePassword(Long id, ChangePasswordRequestDTO changePasswordRequestDTO) {
         userValidation.validateUserExistsById(id);
 
-        if (passwordService.isPasswordValid(id, changePasswordRequest.getOldPassword())) {
-
-            userRepository.updatePassword(id, changePasswordRequest.getNewPassword());
+        if (passwordService.isPasswordValid(id, changePasswordRequestDTO.getOldPassword())) {
+            User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+            user.setPassword(changePasswordRequestDTO.getNewPassword());
+            user.setLastUpdate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+            userRepository.save(user);
         } else {
             throw new IllegalArgumentException("Old password is incorrect");
         }
     }
 
-    public boolean validateLogin(String login, String password) {
-        return userRepository.findAll(1, 0).stream().anyMatch(user -> user.getLogin().equals(login) && user.getPassword().equals(password));
-    }
+public boolean validateLogin(String login, String password) {
+    Optional<User> user = userRepository.findByLogin(login);
+    return user.isPresent() && user.get().getPassword().equals(password);
+}
+
 
     public List<User> findAllUsers(int page, int size) {
-        int offset = (page - 1) * size;
-        return userRepository.findAll(size, offset);
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return userRepository.findAll(pageable).getContent();
     }
 
 
