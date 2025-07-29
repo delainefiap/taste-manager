@@ -17,7 +17,8 @@ public class MenuItem {
     private String description;
     private Double price;
 
-    private Boolean isAvailableOnlyAtRestaurant;
+    @Column(name = "available_only_at_restaurant", nullable = false)
+    private Boolean availableOnlyAtRestaurant = false;
     private String photoPath;
 
     public Long getId() {
@@ -61,11 +62,11 @@ public class MenuItem {
     }
 
     public Boolean getAvailableOnlyAtRestaurant() {
-        return isAvailableOnlyAtRestaurant;
+        return availableOnlyAtRestaurant;
     }
 
     public void setAvailableOnlyAtRestaurant(Boolean availableOnlyAtRestaurant) {
-        isAvailableOnlyAtRestaurant = availableOnlyAtRestaurant;
+        this.availableOnlyAtRestaurant = availableOnlyAtRestaurant;
     }
 
     public String getPhotoPath() {

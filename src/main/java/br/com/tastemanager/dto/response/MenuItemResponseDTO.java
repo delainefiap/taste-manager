@@ -1,14 +1,10 @@
-package br.com.tastemanager.dto.request;
+package br.com.tastemanager.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-public class MenuItemRequestDTO {
+public class MenuItemResponseDTO {
 
     private String name;
     private String description;
     private Double price;
-
-    @JsonProperty("availableOnlyAtRestaurant")
     private Boolean availableOnlyAtRestaurant;
     private String photoPath;
 
@@ -36,13 +32,6 @@ public class MenuItemRequestDTO {
         this.price = price;
     }
 
-    public Boolean getAvailableOnlyInRestaurant() {
-        return availableOnlyAtRestaurant;
-    }
-
-    public void setAvailableOnlyInRestaurant(Boolean availableOnlyAtRestaurant) {
-        availableOnlyAtRestaurant = availableOnlyAtRestaurant;
-    }
 
     public String getPhotoPath() {
         return photoPath;
@@ -50,5 +39,13 @@ public class MenuItemRequestDTO {
 
     public void setPhotoPath(String photoPath) {
         this.photoPath = photoPath;
+    }
+
+    public Boolean getAvailableOnlyAtRestaurant() {
+        return availableOnlyAtRestaurant;
+    }
+
+    public void setAvailableOnlyAtRestaurant(Boolean availableOnlyAtRestaurant) {
+        this.availableOnlyAtRestaurant = availableOnlyAtRestaurant;
     }
 }

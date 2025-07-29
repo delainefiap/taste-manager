@@ -26,21 +26,27 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-//    @GetMapping("/find-all-by-restaurant/{restaurantId}")
-//    public ResponseEntity<List<Menu>> getMenusByRestaurant(@PathVariable Long restaurantId) {
-//        List<Menu> menus = menuService.getMenusByRestaurant(restaurantId);
-//        return ResponseEntity.ok(menus);
-//    }
-//
-//    @PutMapping("/update/{id}")
-//    public ResponseEntity<Menu> updateMenu(@PathVariable Long id, @RequestBody Menu menu) {
-//        Menu updatedMenu = menuService.updateMenu(id, menu);
-//        return ResponseEntity.ok(updatedMenu);
-//    }
-//
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<String> deleteMenu(@PathVariable Long id) {
-//        menuService.deleteMenu(id);
-//        return ResponseEntity.ok("Menu deleted successfully");
-//    }
+    @GetMapping("/find-all-by-restaurant/{restaurantId}")
+    public ResponseEntity<List<MenuResponseDTO>> getMenusByRestaurant(@PathVariable Long restaurantId) {
+        List<MenuResponseDTO> menus = menuService.getMenusByRestaurant(restaurantId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(menus);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<MenuResponseDTO> updateMenu(@PathVariable Long id, @RequestBody MenuRequestDTO menuRequest) {
+        MenuResponseDTO updatedMenu = menuService.updateMenu(id, menuRequest);
+        return ResponseEntity.ok(updatedMenu);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteMenu(@PathVariable Long id) {
+        menuService.deleteMenu(id);
+        return ResponseEntity.ok("Menu deleted successfully");
+    }
+
+    @DeleteMapping("/delete-item/{menuId}/{itemId}")
+    public ResponseEntity<String> deleteMenuItem(@PathVariable Long menuId, @PathVariable Long itemId) {
+        menuService.deleteMenuItem(menuId, itemId);
+        return ResponseEntity.ok("Menu item deleted successfully");
+    }
 }
