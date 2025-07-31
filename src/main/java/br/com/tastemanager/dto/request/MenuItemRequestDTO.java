@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class MenuItemRequestDTO {
 
+
     private String name;
     private String description;
     private Double price;
@@ -36,12 +37,12 @@ public class MenuItemRequestDTO {
         this.price = price;
     }
 
-    public Boolean getAvailableOnlyInRestaurant() {
+    public Boolean getAvailableOnlyAtRestaurant() {
         return availableOnlyAtRestaurant;
     }
 
-    public void setAvailableOnlyInRestaurant(Boolean availableOnlyAtRestaurant) {
-        availableOnlyAtRestaurant = availableOnlyAtRestaurant;
+    public void setAvailableOnlyAtRestaurant(Boolean availableOnlyAtRestaurant) {
+        this.availableOnlyAtRestaurant = availableOnlyAtRestaurant;
     }
 
     public String getPhotoPath() {

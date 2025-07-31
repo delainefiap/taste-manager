@@ -2,11 +2,21 @@ package br.com.tastemanager.dto.response;
 
 public class MenuItemResponseDTO {
 
+    private Long itemId;
+
     private String name;
     private String description;
     private Double price;
     private Boolean availableOnlyAtRestaurant;
     private String photoPath;
+
+    public Long getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
+    }
 
     public String getName() {
         return name;

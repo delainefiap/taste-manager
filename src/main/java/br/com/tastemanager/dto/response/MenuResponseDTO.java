@@ -1,21 +1,19 @@
 package br.com.tastemanager.dto.response;
 
-import br.com.tastemanager.entity.Restaurant;
-
 import java.util.List;
 
 public class MenuResponseDTO {
 
-    private Long id;
+    private Long menuId;
     private List<MenuItemResponseDTO> items;
     private RestaurantSummaryDTO restaurant;
 
-    public Long getId() {
-        return id;
+    public Long getMenuId() {
+        return menuId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMenuId(Long menuId) {
+        this.menuId = menuId;
     }
 
     public List<MenuItemResponseDTO> getItems() {

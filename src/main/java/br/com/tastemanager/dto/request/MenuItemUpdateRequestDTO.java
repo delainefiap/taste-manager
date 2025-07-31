@@ -1,40 +1,24 @@
-package br.com.tastemanager.entity;
+package br.com.tastemanager.dto.request;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity
-public class MenuItem {
+public class MenuItemUpdateRequestDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
-
+    private Long itemId;
     private String name;
     private String description;
     private Double price;
 
-    @Column(name = "available_only_at_restaurant", nullable = false)
-    private Boolean availableOnlyAtRestaurant = false;
+    @JsonProperty("availableOnlyAtRestaurant")
+    private Boolean availableOnlyAtRestaurant;
     private String photoPath;
 
     public Long getId() {
-        return id;
+        return itemId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
+    public void setId(Long menuId) {
+        this.itemId = menuId;
     }
 
     public String getName() {

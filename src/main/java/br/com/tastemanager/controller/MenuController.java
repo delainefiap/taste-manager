@@ -1,5 +1,6 @@
 package br.com.tastemanager.controller;
 
+import br.com.tastemanager.dto.request.MenuItemUpdateRequestDTO;
 import br.com.tastemanager.dto.request.MenuRequestDTO;
 import br.com.tastemanager.dto.response.MenuResponseDTO;
 import br.com.tastemanager.entity.Menu;
@@ -33,12 +34,12 @@ public class MenuController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<MenuResponseDTO> updateMenu(@PathVariable Long id, @RequestBody MenuRequestDTO menuRequest) {
-        MenuResponseDTO updatedMenu = menuService.updateMenu(id, menuRequest);
+    public ResponseEntity<MenuResponseDTO> updateMenu(@PathVariable Long id, @RequestBody MenuItemUpdateRequestDTO menuItemRequest) {
+        MenuResponseDTO updatedMenu = menuService.updateMenu(id, menuItemRequest);
         return ResponseEntity.ok(updatedMenu);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{menuId}")
     public ResponseEntity<String> deleteMenu(@PathVariable Long id) {
         menuService.deleteMenu(id);
         return ResponseEntity.ok("Menu deleted successfully");

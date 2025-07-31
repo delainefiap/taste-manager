@@ -1,6 +1,8 @@
 package br.com.tastemanager.entity;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -8,21 +10,21 @@ public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+    private Long menuId;
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MenuItem> items;
+    private List<ItemMenu> items = new ArrayList<>();
 
-    public Long getId() {
-        return id;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    public Long getMenuId() {
+        return menuId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMenuId(Long menuId) {
+        this.menuId = menuId;
     }
 
     public Restaurant getRestaurant() {
@@ -33,11 +35,11 @@ public class Menu {
         this.restaurant = restaurant;
     }
 
-    public List<MenuItem> getItems() {
+    public List<ItemMenu> getItems() {
         return items;
     }
 
-    public void setItems(List<MenuItem> items) {
+    public void setItems(List<ItemMenu> items) {
         this.items = items;
     }
 }
