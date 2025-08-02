@@ -1,12 +1,21 @@
 package br.com.tastemanager.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class MenuItemRequestDTO {
 
-
+    @NotBlank(message = "The name cannot be blank")
     private String name;
+
+    @NotBlank(message = "You should provide a description")
     private String description;
+
+    @NotNull(message = "The price must not be null")
+    @Min(value = 0, message = "The price must be a positive value")
     private Double price;
 
     @JsonProperty("availableOnlyAtRestaurant")

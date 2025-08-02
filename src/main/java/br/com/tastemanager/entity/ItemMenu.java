@@ -1,6 +1,8 @@
 package br.com.tastemanager.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class ItemMenu {
@@ -14,8 +16,13 @@ public class ItemMenu {
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
 
+    @NotBlank(message = "The name cannot be blank")
     private String name;
+
+    @NotBlank(message = "You should provide a description")
     private String description;
+
+    @Positive(message = "The price must be a positive value")
     private double price;
     private String photoPath;
     private boolean availableOnlyAtRestaurant;

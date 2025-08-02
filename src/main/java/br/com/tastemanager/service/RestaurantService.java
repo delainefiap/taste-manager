@@ -4,8 +4,9 @@ import br.com.tastemanager.dto.request.RestaurantRequestDTO;
 import br.com.tastemanager.dto.response.RestaurantResponseDTO;
 import br.com.tastemanager.entity.Restaurant;
 import br.com.tastemanager.entity.User;
+import br.com.tastemanager.mapper.RestaurantMapper;
 import br.com.tastemanager.repository.RestaurantRepository;
-import br.com.tastemanager.repository.UserRepository;
+import br.com.tastemanager.validator.RestaurantValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,59 +16,46 @@ import java.util.stream.Collectors;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
-    private final UserRepository userRepository;
+    private final RestaurantMapper restaurantMapper;
+    private final RestaurantValidator restaurantValidator;
 
-    public RestaurantService(RestaurantRepository restaurantRepository, UserRepository userRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository, RestaurantMapper restaurantMapper, RestaurantValidator restaurantValidator) {
         this.restaurantRepository = restaurantRepository;
-        this.userRepository = userRepository;
+        this.restaurantMapper = restaurantMapper;
+        this.restaurantValidator = restaurantValidator;
     }
 
     public RestaurantResponseDTO createRestaurant(RestaurantRequestDTO requestDTO) {
-        User owner = userRepository.findById(requestDTO.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User owner = restaurantValidator.validateOwner(requestDTO.getOwnerId());
+        restaurantValidator.validateRestaurantName(requestDTO.getName());
 
-        if (!owner.getUserTypeId().getId().equals(2L)) {
-            throw new IllegalArgumentException("Owner must be a user with UserType ID = 2");
-        }
-
-        if(restaurantRepository.existsByName(requestDTO.getName())) {
-            throw new IllegalArgumentException("Restaurant with this name already exists");
-        }
-
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName(requestDTO.getName());
-        restaurant.setAddress(requestDTO.getAddress());
-        restaurant.setTypeKitchen(requestDTO.getTypeKitchen());
-        restaurant.setOpeningHours(requestDTO.getOpeningHours());
+        Restaurant restaurant = restaurantMapper.toEntity(requestDTO);
         restaurant.setOwner(owner);
 
         restaurantRepository.save(restaurant);
 
-        return toResponseDTO(restaurant);
+        return restaurantMapper.toResponseDTO(restaurant);
     }
 
     public List<RestaurantResponseDTO> findAllRestaurants() {
         return restaurantRepository.findAll().stream()
-                .map(this::toResponseDTO)
+                .map(restaurantMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public RestaurantResponseDTO findRestaurantById(Long id) {
+        restaurantValidator.validateRestaurantExists(id);
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
-        return toResponseDTO(restaurant);
+        return restaurantMapper.toResponseDTO(restaurant);
     }
 
     public RestaurantResponseDTO updateRestaurant(Long id, RestaurantRequestDTO requestDTO) {
+        restaurantValidator.validateRestaurantExists(id);
+        User owner = restaurantValidator.validateOwner(requestDTO.getOwnerId());
+
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
-
-        User owner = userRepository.findById(requestDTO.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        if (!owner.getUserTypeId().getId().equals(2L)) {
-            throw new IllegalArgumentException("Owner must be a user with UserTypeId = 2");
-        }
 
         restaurant.setName(requestDTO.getName());
         restaurant.setAddress(requestDTO.getAddress());
@@ -77,25 +65,12 @@ public class RestaurantService {
 
         restaurantRepository.save(restaurant);
 
-        return toResponseDTO(restaurant);
+        return restaurantMapper.toResponseDTO(restaurant);
     }
 
     public String deleteRestaurant(Long id) {
-        if (!restaurantRepository.existsById(id)) {
-            throw new IllegalArgumentException("Restaurant not found");
-        }
+        restaurantValidator.validateRestaurantExists(id);
         restaurantRepository.deleteById(id);
         return "Restaurant deleted successfully";
-    }
-
-    private RestaurantResponseDTO toResponseDTO(Restaurant restaurant) {
-        RestaurantResponseDTO responseDTO = new RestaurantResponseDTO();
-        responseDTO.setId(restaurant.getId());
-        responseDTO.setName(restaurant.getName());
-        responseDTO.setAddress(restaurant.getAddress());
-        responseDTO.setTypeKitchen(restaurant.getTypeKitchen());
-        responseDTO.setOpeningHours(restaurant.getOpeningHours());
-        responseDTO.setOwnerName(restaurant.getOwner().getName());
-        return responseDTO;
     }
 }

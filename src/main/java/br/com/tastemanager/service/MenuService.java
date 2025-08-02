@@ -2,14 +2,14 @@ package br.com.tastemanager.service;
 
 import br.com.tastemanager.dto.request.MenuItemUpdateRequestDTO;
 import br.com.tastemanager.dto.request.MenuRequestDTO;
-import br.com.tastemanager.dto.response.MenuItemResponseDTO;
 import br.com.tastemanager.dto.response.MenuResponseDTO;
-import br.com.tastemanager.dto.response.RestaurantSummaryDTO;
 import br.com.tastemanager.entity.ItemMenu;
 import br.com.tastemanager.entity.Menu;
 import br.com.tastemanager.entity.Restaurant;
+import br.com.tastemanager.mapper.MenuMapper;
 import br.com.tastemanager.repository.MenuRepository;
 import br.com.tastemanager.repository.RestaurantRepository;
+import br.com.tastemanager.validator.MenuValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,15 +21,24 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
+    private final MenuMapper menuMapper;
+    private final MenuValidator menuValidator;
 
-    public MenuService(MenuRepository menuRepository, RestaurantRepository restaurantRepository) {
+    public MenuService(MenuRepository menuRepository,
+                       RestaurantRepository restaurantRepository,
+                       MenuMapper menuMapper,
+                       MenuValidator menuValidator) {
         this.menuRepository = menuRepository;
         this.restaurantRepository = restaurantRepository;
+        this.menuMapper = menuMapper;
+        this.menuValidator = menuValidator;
     }
 
     public MenuResponseDTO createMenu(Long restaurantId, MenuRequestDTO menuRequest) {
+        menuValidator.validateMenuRequest(menuRequest);
+
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new IllegalArgumentException("Restaurante não encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant not found"));
 
         Menu menu = menuRepository.findByRestaurantId(restaurantId)
                 .orElseGet(() -> {
@@ -39,29 +48,20 @@ public class MenuService {
                     return newMenu;
                 });
 
-        if (menu.getItems() == null) {
-            menu.setItems(new ArrayList<>());
-        }
-
         menuRequest.getItems().forEach(itemRequest -> {
-            ItemMenu item = new ItemMenu();
-            item.setName(itemRequest.getName());
-            item.setDescription(itemRequest.getDescription());
-            item.setPrice(itemRequest.getPrice());
-            item.setPhotoPath(itemRequest.getPhotoPath());
-            item.setAvailableOnlyAtRestaurant(itemRequest.getAvailableOnlyAtRestaurant());
+            ItemMenu item = menuMapper.toEntity(itemRequest);
             item.setMenu(menu);
             menu.getItems().add(item);
         });
 
         Menu savedMenu = menuRepository.save(menu);
-        return convertToResponseDTO(savedMenu);
-    }
 
+        return menuMapper.toResponseDTO(savedMenu);
+    }
 
     public List<MenuResponseDTO> getMenusByRestaurant(Long restaurantId) {
         return menuRepository.findByRestaurantId(restaurantId).stream()
-                .map(this::convertToResponseDTO)
+                .map(menuMapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -72,27 +72,13 @@ public class MenuService {
         ItemMenu itemToUpdate = menu.getItems().stream()
                 .filter(item -> item.getItemMenuId().equals(menuItemUpdateRequestDTO.getId()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Could not found this item in the menu"));
+                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
 
-        if (menuItemUpdateRequestDTO.getName() != null) {
-            itemToUpdate.setName(menuItemUpdateRequestDTO.getName());
-        }
-        if (menuItemUpdateRequestDTO.getDescription() != null) {
-            itemToUpdate.setDescription(menuItemUpdateRequestDTO.getDescription());
-        }
-        if (menuItemUpdateRequestDTO.getPrice() != null) {
-            itemToUpdate.setPrice(menuItemUpdateRequestDTO.getPrice());
-        }
-        if (menuItemUpdateRequestDTO.getPhotoPath() != null) {
-            itemToUpdate.setPhotoPath(menuItemUpdateRequestDTO.getPhotoPath());
-        }
-        if (menuItemUpdateRequestDTO.getAvailableOnlyAtRestaurant() != null) {
-            itemToUpdate.setAvailableOnlyAtRestaurant(menuItemUpdateRequestDTO.getAvailableOnlyAtRestaurant());
-        }
+        menuMapper.updateItemFromDTO(menuItemUpdateRequestDTO, itemToUpdate);
 
         Menu updatedMenu = menuRepository.save(menu);
 
-        return convertToResponseDTO(updatedMenu);
+        return menuMapper.toResponseDTO(updatedMenu);
     }
 
     public void deleteMenu(Long id) {
@@ -116,26 +102,5 @@ public class MenuService {
 
         menu.getItems().remove(itemToRemove);
         menuRepository.save(menu);
-    }
-
-    private MenuResponseDTO convertToResponseDTO(Menu menu) {
-        MenuResponseDTO response = new MenuResponseDTO();
-        response.setMenuId(menu.getMenuId());
-        response.setItems(menu.getItems().stream().map(item -> {
-            MenuItemResponseDTO itemResponse = new MenuItemResponseDTO();
-            itemResponse.setItemId(item.getItemMenuId());
-            itemResponse.setName(item.getName());
-            itemResponse.setDescription(item.getDescription());
-            itemResponse.setPrice(item.getPrice());
-            itemResponse.setPhotoPath(item.getPhotoPath());
-            itemResponse.setAvailableOnlyAtRestaurant(item.getAvailableOnlyAtRestaurant());
-            return itemResponse;
-        }).collect(Collectors.toList()));
-
-        RestaurantSummaryDTO restaurantSummary = new RestaurantSummaryDTO();
-        restaurantSummary.setName(menu.getRestaurant().getName());
-        response.setRestaurant(restaurantSummary);
-
-        return response;
     }
 }

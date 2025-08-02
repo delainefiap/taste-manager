@@ -21,7 +21,7 @@ class UserValidatorTest {
     @BeforeEach
     void setUp() {
         userRepository = Mockito.mock(UserRepository.class);
-        userValidator = new UserValidator(userRepository);
+//        userValidator = new UserValidator(userRepository);
     }
 
     @Test

@@ -81,6 +81,7 @@ public class UserService {
 
     public String deleteUser(Long id) {
         userValidation.validateUserExistsById(id);
+        userValidation.validateUserIsAOwnerInUseById(id);
         userRepository.deleteById(id);
         return "User deleted successfully";
     }
