@@ -1,6 +1,7 @@
 package br.com.tastemanager.validator;
 
 import br.com.tastemanager.entity.User;
+import br.com.tastemanager.repository.MenuRepository;
 import br.com.tastemanager.repository.RestaurantRepository;
 import br.com.tastemanager.repository.UserRepository;
 import org.springframework.stereotype.Component;
@@ -10,10 +11,12 @@ public class RestaurantValidator {
 
     private final RestaurantRepository restaurantRepository;
     private final UserRepository userRepository;
+    private final MenuRepository menuRepository;
 
-    public RestaurantValidator(RestaurantRepository restaurantRepository, UserRepository userRepository) {
+    public RestaurantValidator(RestaurantRepository restaurantRepository, UserRepository userRepository, MenuRepository menuRepository) {
         this.restaurantRepository = restaurantRepository;
         this.userRepository = userRepository;
+        this.menuRepository = menuRepository;
     }
 
     public User validateOwner(Long ownerId) {
@@ -36,6 +39,12 @@ public class RestaurantValidator {
     public void validateRestaurantExists(Long id) {
         if (!restaurantRepository.existsById(id)) {
             throw new IllegalArgumentException("Restaurant not found");
+        }
+    }
+
+    public void validateRestaurantHasNoMenus(Long restaurantId) {
+        if (menuRepository.existsByRestaurantId(restaurantId)) {
+            throw new IllegalArgumentException("Cannot delete restaurant with associated menus");
         }
     }
 }

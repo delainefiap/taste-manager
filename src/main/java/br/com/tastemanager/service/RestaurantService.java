@@ -70,6 +70,7 @@ public class RestaurantService {
 
     public String deleteRestaurant(Long id) {
         restaurantValidator.validateRestaurantExists(id);
+        restaurantValidator.validateRestaurantHasNoMenus(id);
         restaurantRepository.deleteById(id);
         return "Restaurant deleted successfully";
     }

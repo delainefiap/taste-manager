@@ -2,6 +2,7 @@ package br.com.tastemanager.validator;
 
 import br.com.tastemanager.entity.User;
 import br.com.tastemanager.entity.UserType;
+import br.com.tastemanager.repository.MenuRepository;
 import br.com.tastemanager.repository.RestaurantRepository;
 import br.com.tastemanager.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +18,15 @@ class RestaurantValidatorTest {
 
     private RestaurantRepository restaurantRepository;
     private UserRepository userRepository;
+    private MenuRepository menuRepository;
     private RestaurantValidator validator;
 
     @BeforeEach
     void setUp() {
         restaurantRepository = mock(RestaurantRepository.class);
         userRepository = mock(UserRepository.class);
-        validator = new RestaurantValidator(restaurantRepository, userRepository);
+        menuRepository = mock(MenuRepository.class); // Adicionado mock do MenuRepository
+        validator = new RestaurantValidator(restaurantRepository, userRepository, menuRepository);
     }
 
     @Test
@@ -31,7 +34,7 @@ class RestaurantValidatorTest {
         Long ownerId = 1L;
 
         UserType userType = new UserType();
-        userType.setId(2L); // tipo esperado para owner
+        userType.setId(2L);
 
         User user = new User();
         user.setUserTypeId(userType);
@@ -61,7 +64,7 @@ class RestaurantValidatorTest {
         Long ownerId = 1L;
 
         UserType userType = new UserType();
-        userType.setId(3L); // tipo diferente de 2
+        userType.setId(3L);
 
         User user = new User();
         user.setUserTypeId(userType);
