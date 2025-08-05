@@ -100,6 +100,12 @@
 			<version>5.5.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>0.8.12</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
@@ -107,7 +113,18 @@
 			<name>JBoss Public Maven Repository Group</name>
 			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
 		</repository>
+		<repository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
 	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 
 	<build>
@@ -141,7 +158,6 @@
 				</configuration>
 			</plugin>
 
-
 			<!-- Resources Plugin -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -151,6 +167,38 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+
+			<!-- Plugin do Jacoco -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<excludes>
+								<!-- Excluir classes específicas -->
+								<exclude>br/com/tastemanager/config/**</exclude>
+								<exclude>br/com/tastemanager/controller/openapi</exclude>
+								<exclude>br/com/tastemanager/dto/**</exclude>
+								<exclude>br/com/tastemanager/exception/**</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 
 			<!-- Spring Boot Maven Plugin -->
 			<plugin>

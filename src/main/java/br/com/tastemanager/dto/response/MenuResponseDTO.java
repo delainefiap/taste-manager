@@ -5,7 +5,7 @@ import java.util.List;
 public class MenuResponseDTO {
 
     private Long menuId;
-    private List<MenuItemResponseDTO> items;
+    private List<ItemResponseDTO> items;
     private RestaurantSummaryDTO restaurant;
 
     public Long getMenuId() {
@@ -16,11 +16,11 @@ public class MenuResponseDTO {
         this.menuId = menuId;
     }
 
-    public List<MenuItemResponseDTO> getItems() {
+    public List<ItemResponseDTO> getItems() {
         return items;
     }
 
-    public void setItems(List<MenuItemResponseDTO> items) {
+    public void setItems(List<ItemResponseDTO> items) {
         this.items = items;
     }
 

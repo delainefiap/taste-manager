@@ -8,7 +8,7 @@ public class UserResponseDTO {
     private String email;
     private String login;
 
-    private UserType userTypeId;
+    private UserTypeIdResponseDTO userTypeId;
     private String address;
 
     public String getName() {
@@ -35,11 +35,11 @@ public class UserResponseDTO {
         this.login = login;
     }
 
-    public UserType getUserTypeId() {
+    public UserTypeIdResponseDTO getUserTypeId() {
         return userTypeId;
     }
 
-    public void setUserTypeId(UserType userTypeId) {
+    public void setUserTypeId(UserTypeIdResponseDTO userTypeId) {
         this.userTypeId = userTypeId;
     }
 
@@ -50,4 +50,6 @@ public class UserResponseDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+
+
 }

@@ -60,7 +60,7 @@ public class UserRequestDTO {
         if (login != null && login.contains(" ")) {
             throw new IllegalArgumentException("The 'login' cannot contain spaces.");
         }
-        this.login = login;
+        this.login = login.toLowerCase();
     }
 
     public String getPassword() {

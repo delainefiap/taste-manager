@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
 @Entity
+@Table(name = "item_menu")
 public class ItemMenu {
 
 
