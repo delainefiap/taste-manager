@@ -18,6 +18,25 @@ TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framewo
 - **Docker** (opcional)
 - **H2** configurado
 
+## Estrutura do Projeto
+taste-manager/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── br/com/tastemanager/
+│   │   │       ├── config/
+│   │   │       ├── controller/
+│   │   │       ├── dto/
+│   │   │       ├── entity/
+│   │   │       ├── repository/
+│   │   │       └── service/
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── data.sql
+│   └── test/
+│       └── java/
+└── pom.xml
+
 ## Configuração do Projeto
 
 1. Clone o repositório:
@@ -52,69 +71,173 @@ TasteManager é uma aplicação desenvolvida em **Java 21** utilizando o framewo
 
 ## Endpoints da API
 
-### 1. Criar Usuário
+### Usuários (`/user`)
+
+#### 1. Criar Usuário
 - **POST** `/user/create`
-- **Descrição**: Cria um novo usuário.
-- **Regras**:
-    - `login` deve ser único.
-    - `name`, `email`, `login` e `password` são obrigatórios e válidos.
-- **Resposta**: `201 Created`
+- **Corpo**: `UserRequestDTO`
+- **Resposta**: `UserResponseDTO`
+- **Status**: `201 Created`
 
-### 2. Atualizar Usuário
-- **PUT** `/user/update/{id}`
-- **Descrição**: Atualiza dados permitidos de um usuário existente.
-- **Campos permitidos**: `name`, `email`, `typePerson`, `address`
-- **Regras**:
-    - `login` e `password` não podem ser alterados nesse endpoint.
-    - `name` e `email` devem ser válidos.
-- **Resposta**: `200 OK`
+#### 2. Atualizar Usuário
+- **PATCH** `/user/update/{id}`
+- **Parâmetros**: `id` (path)
+- **Corpo**: `UserUpdateRequestDTO`
+- **Resposta**: String
+- **Status**: `200 OK`
 
-### 3. Trocar Senha
-- **PUT** `/user/update-password/{id}`
-- **Descrição**: Altera a senha do usuário.
-- **Regras**:
-    - Senha atual deve estar correta.
-    - Nova senha não pode ser nula ou em branco.
-- **Resposta**: `200 OK`
+#### 3. Deletar Usuário
+- **DELETE** `/user/delete`
+- **Parâmetros**: `id` (query)
+- **Status**: `200 OK`
 
-### 4. Deletar Usuário
-- **DELETE** `/user/delete/{id}`
-- **Descrição**: Remove um usuário.
-- **Regras**:
-    - Usuário deve existir.
-- **Resposta**: `200 OK`
+#### 4. Trocar Senha
+- **POST** `/user/change-password/{id}`
+- **Parâmetros**: `id` (path)
+- **Corpo**: `ChangePasswordRequestDTO`
+- **Status**: `200 OK`
 
-### 5. Validar Login
-- **POST** `/user/login`
-- **Descrição**: Verifica se login e senha são válidos.
-- **Regras**:
-    - `login` e `password` não podem estar vazios.
-- **Resposta**:
-    - `200 OK` se credenciais forem válidas.
-    - `401 Unauthorized` se inválidas.
-
-### 6. Listar Usuários
-- **GET** `/user/all`
-- **Descrição**: Lista usuários com suporte à paginação.
+#### 5. Validar Login
+- **POST** `/user/validate-login`
 - **Parâmetros**:
-    - `size` (opcional): número de usuários por página.
-    - `offset` (opcional): posição inicial.
-- **Resposta**: `200 OK` com lista paginada.
+    - `login` (query)
+    - `password` (query)
+- **Status**: `200 OK`
 
-## Regras Gerais de Validação
+#### 6. Listar Usuários
+- **GET** `/user/find-all`
+- **Parâmetros**:
+    - `page` (query)
+    - `size` (query)
+- **Status**: `200 OK`
 
-- **name**: obrigatório, não pode ser nulo, vazio ou apenas espaços.
-- **email**: obrigatório e válido.
-- **typePerson**: deve ser `customer` ou `restaurant_owner`.
-- **address**: opcional, mas válido se fornecido.
-- **login**: definido na criação, não pode ser alterado.
-- **password**: só pode ser alterado pelo endpoint de troca de senha.
+### Restaurantes (`/restaurant`)
+
+#### 1. Criar Restaurante
+- **POST** `/restaurant/create`
+- **Corpo**: `RestaurantRequestDTO`
+- **Resposta**: `RestaurantResponseDTO`
+- **Status**: `201 Created`
+
+#### 2. Listar Restaurantes
+- **GET** `/restaurant/find-all`
+- **Resposta**: Lista de `RestaurantResponseDTO`
+- **Status**: `200 OK`
+
+#### 3. Buscar Restaurante por ID
+- **GET** `/restaurant/find-by-id/{id}`
+- **Parâmetros**: `id` (path)
+- **Resposta**: `RestaurantResponseDTO`
+- **Status**: `200 OK`
+
+#### 4. Atualizar Restaurante
+- **PATCH** `/restaurant/update/{id}`
+- **Parâmetros**: `id` (path)
+- **Corpo**: `RestaurantRequestDTO`
+- **Resposta**: `RestaurantResponseDTO`
+- **Status**: `200 OK`
+
+#### 5. Deletar Restaurante
+- **DELETE** `/restaurant/delete/{id}`
+- **Parâmetros**: `id` (path)
+- **Status**: `200 OK`
+
+### Menu (`/menu`)
+
+#### 1. Criar Menu
+- **POST** `/menu/create/{restaurantId}`
+- **Parâmetros**: `restaurantId` (path)
+- **Corpo**: `MenuRequestDTO`
+- **Status**: `201 Created`
+
+#### 2. Listar Menus por Restaurante
+- **GET** `/menu/find-all-by-restaurant/{restaurantId}`
+- **Parâmetros**: `restaurantId` (path)
+- **Resposta**: Lista de `MenuResponseDTO`
+- **Status**: `200 OK`
+
+#### 3. Listar Todos os Menus
+- **GET** `/menu/find-all`
+- **Parâmetros**:
+    - `page` (query)
+    - `size` (query)
+- **Status**: `200 OK`
+
+#### 4. Atualizar Menu
+- **PUT** `/menu/update/{id}`
+- **Parâmetros**: `id` (path)
+- **Corpo**: `MenuItemUpdateRequestDTO`
+- **Status**: `200 OK`
+
+#### 5. Deletar Menu
+- **DELETE** `/menu/delete/{menuId}`
+- **Parâmetros**: `menuId` (path)
+- **Status**: `200 OK`
+
+#### 6. Deletar Item do Menu
+- **DELETE** `/menu/delete-item/{menuId}/{itemId}`
+- **Parâmetros**:
+    - `menuId` (path)
+    - `itemId` (path)
+- **Status**: `200 OK`
+
+### Tipos de Usuário (`/user-type`)
+
+#### 1. Criar Tipo de Usuário
+- **POST** `/user-type/create`
+- **Corpo**: `UserTypeRequestDTO`
+- **Resposta**: `UserTypeResponseDTO`
+- **Status**: `201 Created`
+
+#### 2. Listar Tipos de Usuário
+- **GET** `/user-type/find-all`
+- **Parâmetros**:
+    - `page` (query)
+    - `size` (query)
+- **Status**: `200 OK`
+
+#### 3. Atualizar Tipo de Usuário
+- **PATCH** `/user-type/update/{id}`
+- **Parâmetros**: `id` (path)
+- **Corpo**: `UserTypeRequestDTO`
+- **Resposta**: `UserTypeResponseDTO`
+- **Status**: `200 OK`
+
+#### 4. Deletar Tipo de Usuário
+- **DELETE** `/user-type/delete/{id}`
+- **Parâmetros**: `id` (path)
+- **Status**: `200 OK`
+
+#### 5. Buscar Tipo de Usuário por ID
+- **GET** `/user-type/find-by-id/{id}`
+- **Parâmetros**: `id` (path)
+- **Resposta**: `UserTypeResponseDTO`
+- **Status**: `200 OK`
 
 ## Testes
 Para executar os testes:
 ```bash
 mvn test
 ```
+## Cobertura de Testes
+
+O projeto utiliza JaCoCo para análise de cobertura de código:
+
+1. Gerar relatório de cobertura:
+   ```bash
+   mvn clean verify
+
+O relatório pode ser encontrado em:
+- `target/site/jacoco/index.html`
+
+
+## Documentação da API
+
+A documentação completa da API está disponível através do Swagger UI:
+- **URL**: `http://localhost:8080/swagger-ui.html`
+- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
+
+
 
 
 ## Contribuição
