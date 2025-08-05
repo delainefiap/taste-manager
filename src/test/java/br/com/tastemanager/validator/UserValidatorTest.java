@@ -1,84 +1,105 @@
 package br.com.tastemanager.validator;
 
-import br.com.tastemanager.entity.User;
+import br.com.tastemanager.repository.RestaurantRepository;
 import br.com.tastemanager.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UserValidatorTest {
 
     private UserRepository userRepository;
+    private RestaurantRepository restaurantRepository;
     private UserValidator userValidator;
 
     @BeforeEach
     void setUp() {
-        userRepository = Mockito.mock(UserRepository.class);
-        userValidator = new UserValidator(userRepository);
+        userRepository = mock(UserRepository.class);
+        restaurantRepository = mock(RestaurantRepository.class);
+        userValidator = new UserValidator(userRepository, restaurantRepository);
     }
 
-    @Test
-    void validateLoginAvailability_ShouldNotThrow_WhenLoginIsAvailable() {
-        String login = "availableLogin";
-        when(userRepository.findIdByLogin(login)).thenReturn(Optional.empty());
+    @Nested
+    @DisplayName("validateLoginAvailability")
+    class ValidateLoginAvailability {
 
-        assertDoesNotThrow(() -> userValidator.validateLoginAvailability(login));
-        verify(userRepository, times(1)).findIdByLogin(login);
+        @Test
+        @DisplayName("throws exception when login already exists")
+        void shouldThrowWhenLoginExists() {
+            when(userRepository.findIdByLogin("admin")).thenReturn(Optional.of(1L));
+
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> userValidator.validateLoginAvailability("admin")
+            );
+
+            assertEquals("This login is unavailable. Please choose a different one.", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("does not throw when login is available")
+        void shouldNotThrowWhenLoginIsAvailable() {
+            when(userRepository.findIdByLogin("newUser")).thenReturn(Optional.empty());
+
+            assertDoesNotThrow(() -> userValidator.validateLoginAvailability("newUser"));
+        }
     }
 
-    @Test
-    void validateLoginAvailability_ShouldThrow_WhenLoginIsUnavailable() {
-        String login = "unavailableLogin";
-        when(userRepository.findIdByLogin(login)).thenReturn(Optional.of(1L));
+    @Nested
+    @DisplayName("validateUserExistsById")
+    class ValidateUserExistsById {
 
-        assertThrows(IllegalArgumentException.class, () -> userValidator.validateLoginAvailability(login));
-        verify(userRepository, times(1)).findIdByLogin(login);
+        @Test
+        @DisplayName("throws exception when user does not exist")
+        void shouldThrowWhenUserDoesNotExist() {
+            when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> userValidator.validateUserExistsById(99L)
+            );
+
+            assertEquals("User with the given ID does not exist.", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("does not throw when user exists")
+        void shouldNotThrowWhenUserExists() {
+            when(userRepository.findById(1L)).thenReturn(Optional.of(mock()));
+
+            assertDoesNotThrow(() -> userValidator.validateUserExistsById(1L));
+        }
     }
 
-    @Test
-    void validateUserExistsById_ShouldNotThrow_WhenUserExists() {
-        Long userId = 1L;
-        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+    @Nested
+    @DisplayName("validateUserIsAOwnerInUseById")
+    class ValidateUserIsAOwnerInUseById {
 
-        assertDoesNotThrow(() -> userValidator.validateUserExistsById(userId));
-        verify(userRepository, times(1)).findById(userId);
-    }
+        @Test
+        @DisplayName("throws exception when user is owner of a restaurant")
+        void shouldThrowWhenUserIsOwner() {
+            when(restaurantRepository.existsByOwnerId(5L)).thenReturn(true);
 
-    @Test
-    void validateUserExistsById_ShouldThrow_WhenUserDoesNotExist() {
-        Long userId = 1L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> userValidator.validateUserIsAOwnerInUseById(5L)
+            );
 
-        assertThrows(IllegalArgumentException.class, () -> userValidator.validateUserExistsById(userId));
-        verify(userRepository, times(1)).findById(userId);
-    }
+            assertEquals("Cannot delete: the user is the owner of a restaurant.", exception.getMessage());
+        }
 
-    @Test
-    void validateLoginAvailability_ShouldThrowException_WhenLoginIsUnavailable() {
-        String login = "unavailableLogin";
-        when(userRepository.findIdByLogin(login)).thenReturn(Optional.of(1L));
+        @Test
+        @DisplayName("does not throw when user is not owner of any restaurant")
+        void shouldNotThrowWhenUserIsNotOwner() {
+            when(restaurantRepository.existsByOwnerId(10L)).thenReturn(false);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> userValidator.validateLoginAvailability(login));
-        assertEquals("This login is unavailable. Please choose a different one.", exception.getMessage());
-        verify(userRepository, times(1)).findIdByLogin(login);
-    }
-
-    @Test
-    void validateUserExistsById_ShouldThrowException_WhenUserDoesNotExist() {
-        Long userId = 1L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> userValidator.validateUserExistsById(userId));
-        assertEquals("User with the given ID does not exist.", exception.getMessage());
-        verify(userRepository, times(1)).findById(userId);
+            assertDoesNotThrow(() -> userValidator.validateUserIsAOwnerInUseById(10L));
+        }
     }
 }

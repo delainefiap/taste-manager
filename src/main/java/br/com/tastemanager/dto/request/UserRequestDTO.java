@@ -1,5 +1,6 @@
 package br.com.tastemanager.dto.request;
 
+import br.com.tastemanager.entity.UserType;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
@@ -24,8 +25,8 @@ public class UserRequestDTO {
     @NotBlank(message = "Password is mandatory.")
     private String password;
 
-    @JsonProperty("typePerson")
-    private String typePerson;
+    @JsonProperty("userTypeId")
+    private UserType userTypeId;
 
     @JsonProperty("address")
     private String address;
@@ -59,7 +60,7 @@ public class UserRequestDTO {
         if (login != null && login.contains(" ")) {
             throw new IllegalArgumentException("The 'login' cannot contain spaces.");
         }
-        this.login = login;
+        this.login = login.toLowerCase();
     }
 
     public String getPassword() {
@@ -70,12 +71,12 @@ public class UserRequestDTO {
         this.password = password;
     }
 
-    public String getTypePerson() {
-        return typePerson;
+    public UserType getUserTypeId() {
+        return userTypeId;
     }
 
-    public void setTypePerson(String typePerson) {
-        this.typePerson = typePerson;
+    public void setUserTypeId(UserType userTypeId) {
+        this.userTypeId = userTypeId;
     }
 
     public String getAddress() {

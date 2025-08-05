@@ -63,7 +63,7 @@ class PasswordServiceTest {
         String login = "nonExistentUser";
         String password = "password123";
 
-        when(userRepository.findUserByLogin(login)).thenReturn(Optional.empty());
+//        when(userRepository.findUserByLogin(login)).thenReturn(Optional.empty());
 
         boolean isValid = passwordService.isPasswordValid(id, password);
 

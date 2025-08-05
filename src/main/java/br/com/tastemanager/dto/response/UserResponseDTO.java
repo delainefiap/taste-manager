@@ -1,12 +1,14 @@
 package br.com.tastemanager.dto.response;
 
+import br.com.tastemanager.entity.UserType;
+
 public class UserResponseDTO {
 
     private String name;
     private String email;
     private String login;
 
-    private String typePerson;
+    private UserTypeIdResponseDTO userTypeId;
     private String address;
 
     public String getName() {
@@ -33,12 +35,12 @@ public class UserResponseDTO {
         this.login = login;
     }
 
-    public String getTypePerson() {
-        return typePerson;
+    public UserTypeIdResponseDTO getUserTypeId() {
+        return userTypeId;
     }
 
-    public void setTypePerson(String typePerson) {
-        this.typePerson = typePerson;
+    public void setUserTypeId(UserTypeIdResponseDTO userTypeId) {
+        this.userTypeId = userTypeId;
     }
 
     public String getAddress() {
@@ -48,4 +50,6 @@ public class UserResponseDTO {
     public void setAddress(String address) {
         this.address = address;
     }
+
+
 }
